@@ -1,0 +1,14 @@
+*/bin/
+*/build/
+*/.idea/
+*/.settings/
+*/gradle/
+.classpath
+.project
+.xml
+*/test-results/
+.iml
+/.metadata/
+/.recommenders/
+/out/
+*.class
