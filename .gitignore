@@ -12,3 +12,5 @@
 /.recommenders/
 /out/
 *.class
+/target/
+org.eclipse.*
