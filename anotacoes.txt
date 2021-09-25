@@ -1,0 +1,21 @@
+                           4
+                        /     \
+                      2         8
+                    /   \     /   \
+                   1     3   6     9
+                           /   \
+                          5     7
+
+Pré-ordem: 4,2,1,3,8,6,5,7,9
+
+Visita
+verifica se tem filho a esquerda, se tiver: visita (desce), repete
+senão verifica a direita, se tiver: visita e repete
+senão sobe, repete
+
+
+Pós-ordem: 1,3,2,5,7,6,9,8,4
+Em-ordem:  1,2,3,4,5,6,7,8,9
+Em-nível:  4,2,8,1,3,6,9,5,7
+
+
