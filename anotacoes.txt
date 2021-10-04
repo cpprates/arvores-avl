@@ -18,4 +18,63 @@ Pós-ordem: 1,3,2,5,7,6,9,8,4
 Em-ordem:  1,2,3,4,5,6,7,8,9
 Em-nível:  4,2,8,1,3,6,9,5,7
 
+---------------------------------------------------------------------------
 
+Montar árvore 10,20,30,40,50,60,70
+
+1º > iserindo 10       | 10 |   FB = 0
+
+---------------------------------------
+
+2º > inserindo 20      | 10 |   FB = -1
+                            \
+                           | 20 |
+
+---------------------------------------
+
+3º > inserindo 30    0 | 10 | -2  FB = -2  A árvore fica desbalanceada em 10 pois tem 
+                            \              2 filhos à direita e 0 à esquerda.
+                         0 | 20 | -1       Será necessário efetuar rotação à esquerda
+                                \          de 10, já que 3 nodos à direita.
+                             0 | 30 | 0 
+
+---------------------------------------
+
+4º > rotação à            1 | 20 | -1  FB = 0    Agora a árvore está balaceada e 
+     esquerda de 10         /    \               com Fator de Balanceamento igual 
+                           /      \              à 0.
+                    0 | 10 | 0  0 | 30 | 0 
+
+---------------------------------------
+
+5º > inserindo 40         1 | 20 | -2  FB = -1   A árvore não está desbalanceada pois
+                           /      \              tem FB = -1 no nodo 30.
+                          /        \              
+                    0 | 10 | 0  0 | 30 | -1
+                                      \
+                                       \
+                                    0 | 40 | 0
+
+----------------------------------------
+
+6º > inserindo 50       1 | 20 | -3  FB = -2     A árvore fica desbalanceada em 30
+                         /      \                tem FB = -2. Será necessário realizar
+                        /        \               rotação à esquerda de 30 (pois está 
+                  0 | 10 | 0  0 | 30 | -2        desregulado à direita).
+                                    \            Assim, balanceamos a árvore.
+                                     \           
+                                  0 | 40 | -1    
+                                        \        
+                                         \
+                                      0 | 50 | 0
+
+-----------------------------------------
+
+7º > rotação à          1 | 20 | -2  FB = -1     A árvore fica desbalanceada em 30
+     esquerda de 30      /      \                tem FB = -2. Será necessário realizar
+                        /        \               rotação à esquerda de 30 (pois está 
+                  0 | 10 | 0  1 | 40 | -1        desregulado à direita).
+                                /    \           Assim, balanceamos a árvore.
+                               /      \           
+                        0 | 30 | 0  0 | 50 | 0    
+                                        
