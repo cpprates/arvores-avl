@@ -42,7 +42,7 @@ public class Tree {
             this.node = node;
             added = this.node != null;
         } else {
-            added = compares(node);
+            added = comparesToAdd(node);
         }
         if(added) {
             length++;
@@ -51,19 +51,19 @@ public class Tree {
         return added;
     }
 
-    private boolean compares(Node node) {
+    private boolean comparesToAdd(Node node) {
         Boolean added = false;
         Tree newTree = new Tree();
         if(node.getKey().intValue() < this.node.getKey().intValue()) {
             if(this.getLeftSubTree() != null) {
-                this.getLeftSubTree().addNode(node);
+                added = this.getLeftSubTree().addNode(node);
             } else {
                 newTree.addNode(node);
                 added = this.addLeft(newTree);
             }
         } else if(node.getKey().intValue() > this.node.getKey().intValue()) {
             if(this.getRightSubTree() != null)
-                this.getRightSubTree().addNode(node);
+                added = this.getRightSubTree().addNode(node);
             else {
                 newTree.addNode(node);
                 added = this.addRight(newTree);
