@@ -108,29 +108,80 @@ public class Tree {
             Tree leftTree = this.getLeftSubTree();
             Tree rightTree = this.getRightSubTree();
             if (leftTree == null && rightTree.length > 1) {
-                Tree util;
-                if(rightTree.getLeftSubTree() == null) {
-                    util = new Tree(this.node.getKey());
-                    this.node = rightTree.getNode();
-                    this.setRightSubTree(rightTree.getRightSubTree());
-                    this.length--;
-                    this.addNode(util);
-                    updateIfIsFull();
+                /*
+                    Mudar logica de criacao de nova arvore para 
+                    atribuicao da arvore antiga e anulacao do node que virou pai
+                    assim o node nao perde seus filhos
+                */
+                if(rightTree.getLeftSubTree() == null) {  
+                    rotateLeft();                         // rotacao a esquerda
                 } else {
-                    // 10, 20, 11
-                    util = new Tree(rightTree.getNode().getKey()); // isolando o 20
-                    this.setRightSubTree(rightTree.getLeftSubTree()); // substituindo a ref do 20 por 11
-                    this.length--;
-                    this.addNode(util);
-                    updateIfIsFull();
-                    this.balancing();
+                    doubleRotateLeft();                   // dupla rotacao a esquerda 
                 }
-            } else {
-                
+            } 
+            if (rightTree == null && leftTree.length > 1) {
+                /*
+                Mudar logica de criacao de nova arvore para 
+                atribuicao da arvore antiga e anulacao do node que virou pai
+                assim o node nao perde seus filhos
+                */
+                if(leftTree.getRightSubTree() == null) {  
+                    rotateRight();                        // rotacao a direita
+                } else {
+                    doubleRotateRight();                  // dupla rotacao a direita
+                }
             }
             return true;
         }
         return false;
+    }
+
+    private Boolean rotateLeft() {
+        boolean added = false;
+        Tree rightTree = this.getRightSubTree();
+        Tree util = new Tree(this.node.getKey());
+        this.node = rightTree.getNode();
+        this.setRightSubTree(rightTree.getRightSubTree());
+        this.length--;
+        added = this.addNode(util);
+        updateIfIsFull();
+        return added;
+    }
+
+    private Boolean rotateRight() {
+        boolean added = false;
+        Tree util = new Tree(this.node.getKey());
+        Tree leftTree = this.getLeftSubTree();
+        this.node = leftTree.getNode();
+        this.setLeftSubTree(leftTree.getLeftSubTree());
+        this.length--;
+        added = this.addNode(util);
+        updateIfIsFull();
+        return added;
+    }
+
+    private Boolean doubleRotateRight() {
+        boolean added = false;
+        Tree leftTree = this.getLeftSubTree();
+        Tree util = new Tree(leftTree.getNode().getKey());
+        this.setLeftSubTree(leftTree.getRightSubTree());
+        this.length--;
+        this.addNode(util);
+        updateIfIsFull();
+        this.balancing();
+        return added;
+    }
+
+    private Boolean doubleRotateLeft() {
+        boolean added = false;
+        Tree rightTree = this.getRightSubTree();
+        Tree util = new Tree(rightTree.getNode().getKey());
+        this.setRightSubTree(rightTree.getLeftSubTree());
+        this.length--;
+        this.addNode(util);
+        updateIfIsFull();
+        this.balancing();
+        return added;
     }
 
     private Boolean comparesToAdd(Tree node) {
