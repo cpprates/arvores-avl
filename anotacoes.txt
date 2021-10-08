@@ -78,3 +78,51 @@ Montar árvore 10,20,30,40,50,60,70
                                /      \           
                         0 | 30 | 0  0 | 50 | 0    
                                         
+
+
+Lógica que remove o root, eleva o subtree com mais filhos e adiciona o ex-root com a subtree menor como filho.
+// else if (leftTree.length > rightTree.length) {
+            //     Tree util = new Tree(this.node.getKey());
+            //     util.setRightSubTree(this.getRightSubTree());
+            //     this.length -= util.length;
+            //     this.node = leftTree.getNode();
+            //     this.setLeftSubTree(leftTree.getLeftSubTree());
+            //     this.setRightSubTree(leftTree.getRightSubTree());
+            //     this.addNode(util);
+            //     updateIfIsFull();
+            //     return this.balancing();
+            // } else {
+            //     Tree util = new Tree(this.node.getKey());
+            //     util.setLeftSubTree(this.getLeftSubTree());
+            //     this.length -= util.length;
+            //     this.node = rightTree.getNode();
+            //     this.setRightSubTree(rightTree.getRightSubTree());
+            //     this.setLeftSubTree(rightTree.getLeftSubTree());
+            //     this.addLeft(util);
+            //     this.length += util.length;
+            //     updateIfIsFull();
+            //     return this.balancing();
+            // }
+
+
+
+    // updateBalaceFactorAntigo
+    //     Tree leftTree = this.getLeftSubTree();
+    //     Tree rightTree = this.getRightSubTree();
+    //     if(leftTree == null && rightTree == null)
+    //         return false;
+
+    //     if(leftTree != null && rightTree != null) {
+    //         int left = leftTree.getBalanceFactor();
+    //         int right = rightTree.getBalanceFactor();
+    //         this.balanceFactor = left - ((left > 0 && right < 0) ? (right * -1) : right);
+    //     }
+    //     if(leftTree == null && rightTree.length > 1) {
+    //         int right = rightTree.getBalanceFactor();
+    //         this.balanceFactor = (right < 0) ? (right * -1) : right;
+    //     }
+    //     if(rightTree == null && leftTree.length > 1) {
+    //         int left = leftTree.getBalanceFactor();
+    //         this.balanceFactor = (left < 0) ? (left * -1) : left;
+    //     }
+    //     return true;
