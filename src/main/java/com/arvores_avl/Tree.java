@@ -1,6 +1,6 @@
 package com.arvores_avl;
 
-public class Tree {
+public class  Tree {
     private Node node;
     private Tree leftSubTree;
     private Tree rightSubTree;
@@ -21,6 +21,7 @@ public class Tree {
         this.leftSubTree = null;
         this.rightSubTree = null;
         this.isFull = false;
+        this.levels = 1;
         this.length++;
     }
 
@@ -66,7 +67,11 @@ public class Tree {
             length++;
         }
         updateIfIsFull();
+        updateLevels();
+        updateBalanceFactor();
         this.balancing();
+        updateIfIsFull();
+        updateLevels();
         updateBalanceFactor();
         return added;
     }
@@ -78,9 +83,9 @@ public class Tree {
                 this.balanceFactor = updateBalanceFactorWhenLeftAndRightIsNotNull();
             }
             else if (this.getLeftSubTree() != null)
-                this.balanceFactor = this.getLeftSubTree().length;
+                this.balanceFactor = this.getLeftSubTree().levels;
             else if (this.getRightSubTree() != null)
-                this.balanceFactor = -this.getRightSubTree().length;
+                this.balanceFactor = -this.getRightSubTree().levels;
         } else {
             this.balanceFactor = 0;
         }
@@ -88,34 +93,15 @@ public class Tree {
     }
 
 
-    // atualizar o fator de balaceamento pelo num de niveis.
     private int updateBalanceFactorWhenLeftAndRightIsNotNull() {
-        int leftBF = this.getLeftSubTree().balanceFactor;
-        int rightBF = this.getRightSubTree().balanceFactor;
-
-        if (leftBF == 0 && this.getRightSubTree().isFull && this.getRightSubTree().length > 1)
-            rightBF += (rightBF < 0) ? -1 : 1;
-        if (rightBF == 0 && this.getLeftSubTree().isFull && this.getLeftSubTree().length > 1)
-            leftBF += (leftBF < 0) ? -1 : 1;
-        if (rightBF < 0)
-            rightBF *= -1;
-        if (leftBF < 0)
-            leftBF *= -1;
-        if (leftBF == 0 && this.balanceFactor == -1) {
-            if (this.getRightSubTree() != null && rightBF == 1 && this.getRightSubTree().balanceFactor == -1)
-                return this.getRightSubTree().balanceFactor - rightBF;
-            if (this.getLeftSubTree().length > 1)
-                return 0;
-            return -(rightBF + this.balanceFactor * -1);
-        } else if (rightBF == 0 && this.balanceFactor == 1) {
-            if (this.getRightSubTree().length > 1)
-                return leftBF + this.balanceFactor;
-        }
+        int leftBF = this.getLeftSubTree().levels;
+        int rightBF = this.getRightSubTree().levels;
         return leftBF - rightBF;
-    }
+    } 
 
     private Boolean balancing() {
         // this.isFull && 
+        boolean added = false;
         if (this.length > 1) {
             updateBalanceFactor();
             updateLevels();
@@ -123,7 +109,11 @@ public class Tree {
             Tree rightTree = this.getRightSubTree();
             boolean isOneOfBothNull = leftTree == null || rightTree == null;
             if (isOneOfBothNull) {
-                return balancingLessThenThreeChildTrees();
+                added = balancingLessThenThreeChildTrees();
+                updateIfIsFull();
+                updateLevels();
+                updateBalanceFactor();
+                return added;
             }
             
             /*
@@ -133,61 +123,49 @@ public class Tree {
                 Se não está cheia, o lado esquerdo tem FB=0, o direito não está full e tem mais de 2 filhos.
                 Calcula left.length - right.length 
             */
-            if (!this.isFull && (this.balanceFactor < 2 && this.balanceFactor > -2)) {
+            // boolean isOnlyLeftBalancing = leftTree.balanceFactor == 0 && rightTree.balanceFactor != 0;
+            // boolean isOnlyRightBalancing = rightTree.balanceFactor == 0 && leftTree.balanceFactor != 0;
+            this.getLeftSubTree().updateIfIsFull();
+            this.getRightSubTree().updateIfIsFull();
+            if ((this.balanceFactor < 2 && this.balanceFactor > -2)) {
                 return false;
-            } 
+            }
             boolean isOneOfBothFull = leftTree.balanceFactor == 0 || rightTree.balanceFactor == 0;
-            boolean osDoisNaoNull = leftTree != null && rightTree != null;
-            if (isOneOfBothFull && osDoisNaoNull) {
+            // boolean osDoisNaoNull = leftTree != null && rightTree != null;
+            if (isOneOfBothFull) {
                 Tree util;
                 if (leftTree.balanceFactor != 0) {
                     util = new Tree(this.node.getKey());
                     util.insert(this.getRightSubTree());
-                    
+                    this.node = leftTree.getNode();
+                    util.addLeft(leftTree.getRightSubTree());
+                    util.length += leftTree.getRightSubTree().length;
+                    this.length -= util.length;
+                    this.addLeft(leftTree.getLeftSubTree());
+                    this.addRight(util);
+                    this.length += util.length;
+                    this.getRightSubTree().balancing();
+                    this.getRightSubTree().updateBalanceFactor();
+                    this.getLeftSubTree().balancing();
+                    updateBalanceFactor();
+                    return this.contains(util.getNode());
                 } else {
-                    // ta estourando erro aqui
                     util = new Tree(this.node.getKey());
                     util.insert(this.getLeftSubTree());
-                    this.length -= util.length;
                     this.node = rightTree.getNode();
-                    this.addLeft(rightTree.getLeftSubTree());
+                    util.addRight(rightTree.getLeftSubTree());
+                    util.length += rightTree.getLeftSubTree().length;
+                    this.length -= util.length;
+                    this.addLeft(util);
                     this.addRight(rightTree.getRightSubTree());
-                    this.getLeftSubTree().leftSubTree = util;
-                    this.getLeftSubTree().length += util.length;
                     this.length += util.length;
                     this.getLeftSubTree().balancing();
                     this.getLeftSubTree().updateBalanceFactor();
                     this.getRightSubTree().balancing();
                     updateBalanceFactor();
-                    return true;
+                    return this.contains(util.getNode());
                 }
             }
-            // else if (leftTree.length - rightTree.length >= 2) {
-            //     Tree util = new Tree(this.node.getKey());
-            //     util.setRightSubTree(this.getRightSubTree());
-            //     this.length -= util.length;
-            //     this.node = leftTree.getNode();
-            //     this.setLeftSubTree(leftTree.getLeftSubTree());
-            //     this.setRightSubTree(leftTree.getRightSubTree());
-            //     this.addNode(util);
-            //     updateIfIsFull();
-            //     return this.balancing();
-            // }
-            // else if (leftTree.length - rightTree.length <= -2) {
-            //     Tree util = new Tree(this.node.getKey());
-            //     util.setLeftSubTree(this.getLeftSubTree());
-            //     this.length -= util.length;
-            //     this.node = rightTree.getNode();
-            //     this.setRightSubTree(rightTree.getRightSubTree());
-            //     this.setLeftSubTree(rightTree.getLeftSubTree());
-            //     this.addLeft(util);
-            //     updateIfIsFull();
-            //     return this.balancing();
-            // }
-            // Se a árvore estiver cheia e o FB não for 0
-            // if (this.isFull && this.balanceFactor != 0) {
-            //     return this.balancing();
-            // }
         }
         return false;
     }
@@ -224,10 +202,27 @@ public class Tree {
         return added;
     }
 
+    private Boolean doubleRotateLeft() {
+        boolean added = false;
+        Tree rightTree = new Tree(this.getRightSubTree().getNode().getKey());
+        Tree util = new Tree(this.node.getKey());
+        this.node = this.getRightSubTree().getLeftSubTree().getNode();
+        this.addLeft(util);
+        this.addRight(rightTree);
+        // this.balancing();
+        this.getLeftSubTree().updateIfIsFull();
+        this.getRightSubTree().updateIfIsFull();
+        updateIfIsFull();
+        updateLevels();
+        updateBalanceFactor();
+        return added;
+    }
+
     private Boolean rotateRight() {
         boolean added = false;
-        Tree util = new Tree(this.node.getKey());
         Tree leftTree = this.getLeftSubTree();
+        Tree util = new Tree(this.node.getKey());
+        util.updateLevels();
         this.node = leftTree.getNode();
         this.addLeft(leftTree.getLeftSubTree());
         added = this.addRight(util);
@@ -237,31 +232,20 @@ public class Tree {
 
     private Boolean doubleRotateRight() {
         boolean added = false;
-        Tree leftTree = this.getLeftSubTree();
-        Tree util = new Tree(leftTree.getNode().getKey());
-        this.addLeft(leftTree.getRightSubTree());
-        this.length--;
-        this.insert(util);
+        Tree leftTree = new Tree(this.getLeftSubTree().getNode().getKey());
+        Tree util = new Tree(this.node.getKey());
+        this.node = this.getLeftSubTree().getRightSubTree().getNode();
+        this.addLeft(leftTree);
+        this.addRight(util);
+        // this.balancing();
+        this.getLeftSubTree().updateIfIsFull();
+        this.getRightSubTree().updateIfIsFull();
         updateIfIsFull();
-        this.balancing();
         updateLevels();
         updateBalanceFactor();
         return added;
     }
 
-    private Boolean doubleRotateLeft() {
-        boolean added = false;
-        Tree rightTree = this.getRightSubTree();
-        Tree util = new Tree(rightTree.getNode().getKey());
-        this.addRight(rightTree.getLeftSubTree());
-        this.length--;
-        this.insert(util);
-        updateIfIsFull();
-        this.balancing();
-        updateLevels();
-        updateBalanceFactor();
-        return added;
-    }
 
     private Boolean comparesToAdd(Tree node) {
         Boolean added = false;
@@ -287,7 +271,7 @@ public class Tree {
 
     /**
      * A method which verifies if a param node exists and returns a boolean type if true.
-     * The search happends in pre-order.
+     * The search happens in pre-order.
      * @param node : {@link Node}
      * @return boolean
      */
@@ -311,6 +295,30 @@ public class Tree {
         return found;
     }
 
+
+    public void cursinTreeInPreOrder(Tree tree) {
+        if (tree == null)
+            System.out.print("");
+        else if (tree.length == 1)
+            System.out.print(this.getNode().getKey().intValue());
+        else if (this.getRightSubTree() == null && this.getLeftSubTree() != null)
+            System.out.print(this.getLeftSubTree().getNode().getKey());
+        else if (this.getLeftSubTree() == null && this.getRightSubTree() != null)
+            this.getRightSubTree().contains(node);
+        else if (this.getLeftSubTree() != null && getRightSubTree() != null) {
+            this.getRightSubTree().contains(node);
+            this.getLeftSubTree().contains(node);
+        }
+    }
+
+    public void cursinTreeInOrder() {
+
+    }
+
+    public void cursinTreeInPostOrder() {
+
+    }
+
     // /**
     //  * A method which receives a node and compares with the current node root of tree.
     //  * If the node be less then root, then search on leftTree of root
@@ -331,8 +339,23 @@ public class Tree {
     //     return null;
     // }
 
+
+    /** Retorna o maior valor ente lhs e rhs. */
+
+    private static int max (int lhs, int rhs) {
+        return lhs > rhs ? lhs : rhs;
+    }
+
+    private static int height( Tree t ) {
+        return t == null ? 0 : t.levels;
+    }
+
     private void updateLevels() {
-        this.levels = (int) Math.round(Math.log(this.length)) + 1;
+        if (this.getLeftSubTree() != null)
+            this.getLeftSubTree().updateLevels();
+        if (this.getRightSubTree() != null)
+            this.getRightSubTree().updateLevels();
+        this.levels = max(height(this.getLeftSubTree()), height(this.getRightSubTree()))+1;
     }
 
     private void updateIfIsFull() {
@@ -367,7 +390,6 @@ public class Tree {
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
         return super.toString();
     }
 

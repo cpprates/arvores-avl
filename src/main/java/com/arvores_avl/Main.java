@@ -6,13 +6,21 @@ public class Main {
     public static void main(String[] args) {
 
         Tree tree = new Tree();
-        tree.insert(new Tree(10));
-        tree.insert(new Tree(20));
-        tree.insert(new Tree(30));
-        tree.insert(new Tree(40));
-        tree.insert(new Tree(50));
-        tree.insert(new Tree(60));
-        tree.insert(new Tree(70));
+        tree.insert(new Tree(93));
+        tree.insert(new Tree(9));
+        tree.insert(new Tree(92));
+        tree.insert(new Tree(83));
+        tree.insert(new Tree(74));
+        tree.insert(new Tree(2));
+        tree.insert(new Tree(22));
+        tree.insert(new Tree(56));
+        tree.insert(new Tree(80));
+        tree.insert(new Tree(14));
+        tree.insert(new Tree(48));
+        tree.insert(new Tree(81));
+        tree.insert(new Tree(73));
+        tree.insert(new Tree(7));
+        tree.insert(new Tree(1));
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to the AVL Tree Application\n Choose your option to start:");
